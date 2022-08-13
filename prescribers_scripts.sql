@@ -1,7 +1,8 @@
 
 
 SELECT *
-FROM cbsa;
+FROM cbsa
+ORDER BY cbsa;
 
 SELECT *
 FROM drug;
@@ -148,4 +149,38 @@ a. How many CBSAs are in Tennessee? Warning: The cbsa table contains information
 b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 
 c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population. */
+
+SELECT DISTINCT cbsaname, cbsa
+FROM cbsa
+    INNER JOIN fips_county
+    USING (fipscounty)
+WHERE fips_county.state = 'TN';
+
+SELECT cbsaname, cbsa, SUM(population) as max_population
+FROM cbsa
+    INNER JOIN fips_county
+    USING (fipscounty)
+    INNER JOIN population
+    USING (fipscounty)
+    GROUP BY cbsaname, cbsa
+    ORDER BY max_population desc;
+
+SELECT cbsaname, cbsa, SUM(population) as min_population
+FROM cbsa
+    INNER JOIN fips_county
+    USING (fipscounty)
+    INNER JOIN population
+    USING (fipscounty)
+    GROUP BY cbsaname, cbsa
+    ORDER BY min_population;
+    
+SELECT county, state, population, cbsa
+FROM fips_county
+    INNER JOIN population
+    USING (fipscounty)
+    LEFT JOIN cbsa
+    USING (fipscounty)
+ORDER BY population DESC;
+/*Q5_Answer
+a. 10 b. LARGEST: 34980; 1,830,410 SMALLEST: 34100; 116,352 c. SEVIER; 95,523   */
 
